@@ -158,9 +158,9 @@ function FlipCoupon({ coupon, tilt }) {
     </div>
   );
 }
+let audioRef = { current: null };
 
 const [musicOn, setMusicOn] = useState(false);
-const audioRef = useRef(null);
 const toneRef = useRef(null);
 
   useEffect(() => {
