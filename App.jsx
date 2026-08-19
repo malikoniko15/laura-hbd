@@ -158,33 +158,33 @@ function FlipCoupon({ coupon, tilt }) {
     </div>
   );
 }
-let audioRef = { current: null };
 
-const [musicOn, setMusicOn] = useState(false);
-const toneRef = useRef(null);
+function App() {
+  const [musicOn, setMusicOn] = useState(false);
+  const audioRef = useRef(null);
 
   useEffect(() => {
-  audioRef.current = new Audio("/music.mp3");
-  audioRef.current.loop = true;
+    audioRef.current = new Audio("/music.mp3");
+    audioRef.current.loop = true;
 
-  return () => {
-    if (audioRef.current) {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, []);
+
+  const toggleMusic = () => {
+    if (!audioRef.current) return;
+
+    if (musicOn) {
       audioRef.current.pause();
+      setMusicOn(false);
+    } else {
+      audioRef.current.play().catch((e) => console.error("Audio error:", e));
+      setMusicOn(true);
     }
   };
-}, []);
-
-const toggleMusic = () => {
-  if (!audioRef.current) return;
-
-  if (musicOn) {
-    audioRef.current.pause();
-    setMusicOn(false);
-  } else {
-    audioRef.current.play().catch((e) => console.error("Audio error:", e));
-    setMusicOn(true);
-  }
-};
 
   return (
     <div className="lb-root">
@@ -621,4 +621,5 @@ const toggleMusic = () => {
     </div>
   );
 }
-export default LauraBirthdaySite;
+
+export default App;
