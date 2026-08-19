@@ -1,9 +1,4 @@
-import { useState, useRef, useEffect } from "react";
-
-// ⚠️ УКАЖИ ТОЧНЫЕ НАЗВАНИЯ ФАЙЛОВ ИЗ ПАПКИ PUBLIC
-// Если файла нет, просто оставь пустые кавычки ""
-const MUSIC_PATH = "/music.mp3"; 
-const PHOTO_PATH = "/sisters.jpg"; 
+import { useState } from "react";
 
 const COUPONS = [
   {
@@ -53,8 +48,7 @@ const TAGS = [
   "Constant Support",
 ];
 
-function CameraFrame({ rotate = 0, big = false, tone = "lavender", imgSrc }) {
-  const [imgError, setImgError] = useState(false);
+function CameraFrame({ rotate = 0, big = false, tone = "lavender" }) {
   const tones = {
     lavender: "linear-gradient(135deg,#cbb8e6 0%,#a98fce 55%,#9377b8 100%)",
     tan: "linear-gradient(135deg,#e0c8a3 0%,#c9a06f 55%,#b08a58 100%)",
@@ -78,28 +72,22 @@ function CameraFrame({ rotate = 0, big = false, tone = "lavender", imgSrc }) {
           height: big ? 250 : 156,
           background: tones[tone],
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          overflow: "hidden",
+          gap: "8px",
+          color: "#fffdf7",
         }}
       >
-        {imgSrc && !imgError ? (
-          <img
-            src={imgSrc}
-            alt="photo"
-            onError={() => setImgError(true)}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+            fill="#fffdf7"
           />
-        ) : (
-          <svg width="42%" height="42%" viewBox="0 0 24 24" fill="none" style={{ opacity: 0.9 }}>
-            <path
-              d="M4 8a2 2 0 0 1 2-2h1.2l.9-1.5A1.5 1.5 0 0 1 9.4 4h5.2a1.5 1.5 0 0 1 1.3.75L16.8 6H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z"
-              stroke="#fffdf7"
-              strokeWidth="1.4"
-            />
-            <circle cx="12" cy="13" r="3.4" stroke="#fffdf7" strokeWidth="1.4" />
-          </svg>
-        )}
+        </svg>
+        <span style={{ fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          Best Memories
+        </span>
       </div>
     </div>
   );
@@ -168,40 +156,6 @@ function FlipCoupon({ coupon, tilt }) {
 }
 
 function App() {
-  const [musicOn, setMusicOn] = useState(false);
-  const audioRef = useRef(null);
-
-  useEffect(() => {
-    if (MUSIC_PATH) {
-      audioRef.current = new Audio(MUSIC_PATH);
-      audioRef.current.loop = true;
-    }
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
-    };
-  }, []);
-
-  const toggleMusic = () => {
-    if (!audioRef.current || !MUSIC_PATH) {
-      alert("Музыкальный файл пока не найден, но сайт работает!");
-      return;
-    }
-
-    if (musicOn) {
-      audioRef.current.pause();
-      setMusicOn(false);
-    } else {
-      audioRef.current.play().then(() => {
-        setMusicOn(true);
-      }).catch((e) => {
-        console.error("Audio play failed:", e);
-        alert("Не удалось включить музыку! Проверь название файла.");
-      });
-    }
-  };
-
   return (
     <div className="lb-root">
       <style>{`
@@ -243,31 +197,6 @@ function App() {
           font-size: clamp(14px, 2.4vw, 20px);
           text-transform: uppercase;
         }
-        .music-btn {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          background: var(--cream);
-          border: 2px solid var(--lavender-deep);
-          border-radius: 999px;
-          padding: 7px 16px;
-          cursor: pointer;
-          font-family: 'Kalam', cursive;
-          font-size: 13px;
-          font-weight: 700;
-          color: var(--lavender-deep);
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .music-btn:hover { transform: translateY(-2px) rotate(-1deg); box-shadow: 0 6px 14px rgba(0,0,0,0.15); }
-        .music-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background: var(--tan);
-          display: inline-block;
-        }
-        .music-dot.on { animation: pulse 1.4s ease-in-out infinite; background: var(--lavender-deep); }
-        @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.6); opacity: 0.5; } }
 
         /* HERO */
         .lb-hero-wrap { position: relative; padding: 46px 5vw 60px; }
@@ -533,10 +462,6 @@ function App() {
 
       <div className="lb-topbar">
         <span className="lb-topbar-title">Happy Birthday, Laura</span>
-        <button className="music-btn" onClick={toggleMusic} aria-pressed={musicOn}>
-          <span className={`music-dot ${musicOn ? "on" : ""}`} />
-          {musicOn ? "music playing" : "play music"}
-        </button>
       </div>
 
       <div className="lb-hero-wrap">
@@ -562,7 +487,7 @@ function App() {
 
           <div style={{ position: "relative" }}>
             <div className="lb-hero-photos">
-              <CameraFrame rotate={-6} tone="lavender" imgSrc={PHOTO_PATH} />
+              <CameraFrame rotate={-6} tone="lavender" />
               <div style={{ position: "relative" }}>
                 <div className="lb-strip">
                   <div className="lb-strip-frame" />
@@ -594,7 +519,7 @@ function App() {
       <div className="lb-files-section">
         <div className="lb-files-card">
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, justifyContent: "center" }}>
-            <CameraFrame rotate={3} big tone="tan" imgSrc={PHOTO_PATH} />
+            <CameraFrame rotate={3} big tone="tan" />
             <FlowerMark size={70} />
           </div>
           <div>
