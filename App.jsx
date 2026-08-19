@@ -1,5 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 
+// ⚠️ УКАЖИ ТОЧНЫЕ НАЗВАНИЯ ФАЙЛОВ ИЗ ПАПКИ PUBLIC
+// Если файла нет, просто оставь пустые кавычки ""
+const MUSIC_PATH = "/music.mp3"; 
+const PHOTO_PATH = "/sisters.jpg"; 
+
 const COUPONS = [
   {
     title: "Coffee Date",
@@ -49,11 +54,13 @@ const TAGS = [
 ];
 
 function CameraFrame({ rotate = 0, big = false, tone = "lavender", imgSrc }) {
+  const [imgError, setImgError] = useState(false);
   const tones = {
     lavender: "linear-gradient(135deg,#cbb8e6 0%,#a98fce 55%,#9377b8 100%)",
     tan: "linear-gradient(135deg,#e0c8a3 0%,#c9a06f 55%,#b08a58 100%)",
     cream: "linear-gradient(135deg,#f7f0df 0%,#ecdfc2 55%,#ddc99f 100%)",
   };
+
   return (
     <div
       style={{
@@ -76,10 +83,11 @@ function CameraFrame({ rotate = 0, big = false, tone = "lavender", imgSrc }) {
           overflow: "hidden",
         }}
       >
-        {imgSrc ? (
+        {imgSrc && !imgError ? (
           <img
             src={imgSrc}
             alt="photo"
+            onError={() => setImgError(true)}
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
         ) : (
@@ -164,9 +172,10 @@ function App() {
   const audioRef = useRef(null);
 
   useEffect(() => {
-    audioRef.current = new Audio("/music.mp3");
-    audioRef.current.loop = true;
-
+    if (MUSIC_PATH) {
+      audioRef.current = new Audio(MUSIC_PATH);
+      audioRef.current.loop = true;
+    }
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -175,7 +184,10 @@ function App() {
   }, []);
 
   const toggleMusic = () => {
-    if (!audioRef.current) return;
+    if (!audioRef.current || !MUSIC_PATH) {
+      alert("Музыкальный файл пока не найден, но сайт работает!");
+      return;
+    }
 
     if (musicOn) {
       audioRef.current.pause();
@@ -185,7 +197,7 @@ function App() {
         setMusicOn(true);
       }).catch((e) => {
         console.error("Audio play failed:", e);
-        alert("Не удалось включить музыку! Проверь, лежит ли файл music.mp3 в папке public.");
+        alert("Не удалось включить музыку! Проверь название файла.");
       });
     }
   };
@@ -550,7 +562,7 @@ function App() {
 
           <div style={{ position: "relative" }}>
             <div className="lb-hero-photos">
-              <CameraFrame rotate={-6} tone="lavender" imgSrc="/sisters.jpg" />
+              <CameraFrame rotate={-6} tone="lavender" imgSrc={PHOTO_PATH} />
               <div style={{ position: "relative" }}>
                 <div className="lb-strip">
                   <div className="lb-strip-frame" />
@@ -582,7 +594,7 @@ function App() {
       <div className="lb-files-section">
         <div className="lb-files-card">
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, justifyContent: "center" }}>
-            <CameraFrame rotate={3} big tone="tan" imgSrc="/sisters.jpg" />
+            <CameraFrame rotate={3} big tone="tan" imgSrc={PHOTO_PATH} />
             <FlowerMark size={70} />
           </div>
           <div>
