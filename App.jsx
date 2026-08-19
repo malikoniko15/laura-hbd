@@ -78,7 +78,7 @@ function CameraFrame({ rotate = 0, big = false, tone = "lavender", imgSrc }) {
       >
         {imgSrc ? (
           <img
-            src={imgSrc || "/sisters.jpg"}
+            src={imgSrc}
             alt="photo"
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
@@ -181,8 +181,12 @@ function App() {
       audioRef.current.pause();
       setMusicOn(false);
     } else {
-      audioRef.current.play().catch((e) => console.error("Audio error:", e));
-      setMusicOn(true);
+      audioRef.current.play().then(() => {
+        setMusicOn(true);
+      }).catch((e) => {
+        console.error("Audio play failed:", e);
+        alert("Не удалось включить музыку! Проверь, лежит ли файл music.mp3 в папке public.");
+      });
     }
   };
 
@@ -546,7 +550,7 @@ function App() {
 
           <div style={{ position: "relative" }}>
             <div className="lb-hero-photos">
-              <CameraFrame rotate={-6} tone="lavender" />
+              <CameraFrame rotate={-6} tone="lavender" imgSrc="/sisters.jpg" />
               <div style={{ position: "relative" }}>
                 <div className="lb-strip">
                   <div className="lb-strip-frame" />
@@ -578,7 +582,7 @@ function App() {
       <div className="lb-files-section">
         <div className="lb-files-card">
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, justifyContent: "center" }}>
-            <CameraFrame rotate={3} big tone="tan" />
+            <CameraFrame rotate={3} big tone="tan" imgSrc="/sisters.jpg" />
             <FlowerMark size={70} />
           </div>
           <div>
