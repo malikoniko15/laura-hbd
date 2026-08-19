@@ -159,9 +159,9 @@ function FlipCoupon({ coupon, tilt }) {
   );
 }
 
-export default function LauraBirthdaySite() {
-  const [musicOn, setMusicOn] = useState(false);
-  const toneRef = useRef(null);
+const [musicOn, setMusicOn] = useState(false);
+const audioRef = useRef(null);
+const toneRef = useRef(null);
 
   useEffect(() => {
   audioRef.current = new Audio("/music.mp3");
@@ -621,4 +621,4 @@ const toggleMusic = () => {
     </div>
   );
 }
-export default App;
+export default LauraBirthdaySite;
