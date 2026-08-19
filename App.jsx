@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const COUPONS = [
   {
@@ -48,7 +48,13 @@ const TAGS = [
   "Constant Support",
 ];
 
-function CameraFrame({ rotate = 0, big = false }) {
+function CameraFrame({ rotate = 0, big = false, tone = "lavender" }) {
+  const tones = {
+    lavender: "linear-gradient(135deg,#cbb8e6 0%,#a98fce 55%,#9377b8 100%)",
+    tan: "linear-gradient(135deg,#e0c8a3 0%,#c9a06f 55%,#b08a58 100%)",
+    cream: "linear-gradient(135deg,#f7f0df 0%,#ecdfc2 55%,#ddc99f 100%)",
+  };
+
   return (
     <div
       style={{
@@ -64,7 +70,7 @@ function CameraFrame({ rotate = 0, big = false }) {
         style={{
           width: "100%",
           height: big ? 250 : 156,
-          background: "linear-gradient(135deg,#cbb8e6 0%,#a98fce 55%,#9377b8 100%)",
+          background: tones[tone],
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -73,10 +79,45 @@ function CameraFrame({ rotate = 0, big = false }) {
           color: "#fffdf7",
         }}
       >
-        <span style={{ fontSize: "28px" }}>💖</span>
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+            fill="#fffdf7"
+          />
+        </svg>
         <span style={{ fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase" }}>
           Best Memories
         </span>
+      </div>
+    </div>
+  );
+}
+
+function FlowerMark({ size = 90, style }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" style={style}>
+      <g fill="#cbb8e6" stroke="#9377b8" strokeWidth="1.5">
+        <ellipse cx="50" cy="26" rx="14" ry="20" />
+        <ellipse cx="74" cy="50" rx="20" ry="14" />
+        <ellipse cx="50" cy="74" rx="14" ry="20" />
+        <ellipse cx="26" cy="50" rx="20" ry="14" />
+      </g>
+      <circle cx="50" cy="50" r="12" fill="#e0c8a3" stroke="#b08a58" strokeWidth="1.5" />
+      <path d="M50 62 Q46 78 40 92" stroke="#9c8672" strokeWidth="2" fill="none" />
+    </svg>
+  );
+}
+
+function OrnamentSeal() {
+  return (
+    <div className="lb-seal">
+      <div className="lb-seal-inner">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M12 3 L14 9 L20 9 L15 13 L17 19 L12 15 L7 19 L9 13 L4 9 L10 9 Z"
+            fill="#c9a06f"
+          />
+        </svg>
       </div>
     </div>
   );
@@ -89,12 +130,16 @@ function FlipCoupon({ coupon, tilt }) {
       className="coupon-scene"
       style={{ transform: `rotate(${tilt}deg)` }}
       onClick={() => setFlipped((f) => !f)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && setFlipped((f) => !f)}
+      aria-label={`Coupon: ${coupon.title}. Click to flip.`}
     >
       <div className={`coupon-card ${flipped ? "is-flipped" : ""}`}>
         <div className="coupon-face coupon-front">
           <p className="coupon-front-title">{coupon.title}</p>
           <p className="coupon-front-sub">{coupon.subtitle}</p>
-          <span className="coupon-hint">click to open ✨</span>
+          <span className="coupon-hint">click to open</span>
         </div>
         <div className="coupon-face coupon-back">
           <p className="coupon-back-label">Love Coupon</p>
@@ -110,10 +155,12 @@ function FlipCoupon({ coupon, tilt }) {
   );
 }
 
-export default function App() {
+function App() {
   return (
     <div className="lb-root">
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Kalam:wght@300;400;700&family=Playfair+Display:ital,wght@0,700;0,900;1,600&display=swap');
+
         .lb-root {
           --lavender: #b9a7d6;
           --lavender-deep: #8f74b8;
@@ -122,12 +169,12 @@ export default function App() {
           --tan-deep: #a67e4f;
           --cream: #fbf6ec;
           --cream-deep: #f1e6d0;
-          font-family: sans-serif;
+          font-family: 'Kalam', cursive;
           color: var(--lavender-ink);
           background: var(--cream);
           min-height: 100vh;
           overflow-x: hidden;
-          padding-bottom: 40px;
+          position: relative;
         }
         .lb-root * { box-sizing: border-box; }
 
@@ -135,80 +182,282 @@ export default function App() {
           position: sticky;
           top: 0;
           z-index: 40;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
           padding: 14px 22px;
           background: var(--lavender);
           border-bottom: 3px solid var(--lavender-deep);
         }
         .lb-topbar-title {
+          font-family: 'Playfair Display', serif;
           font-weight: 900;
           letter-spacing: 0.08em;
           color: var(--cream);
-          font-size: 18px;
+          font-size: clamp(14px, 2.4vw, 20px);
           text-transform: uppercase;
         }
 
-        .lb-hero-wrap { padding: 30px 5vw; }
+        /* HERO */
+        .lb-hero-wrap { position: relative; padding: 46px 5vw 60px; }
         .lb-ribbon {
           background: var(--tan);
           border-top: 3px solid var(--lavender-deep);
           border-bottom: 3px solid var(--lavender-deep);
           text-align: center;
-          padding: 10px;
+          padding: 10px 10px;
+          font-family: 'Playfair Display', serif;
           font-weight: 900;
+          letter-spacing: 0.05em;
           font-size: clamp(20px, 4vw, 34px);
           color: var(--cream);
-          margin: 0 -5vw;
+          text-shadow: 3px 3px 0 var(--tan-deep);
+          margin: 0 -5vw 0;
+          transform: rotate(-0.4deg);
+        }
+        .lb-ribbon-sub {
+          text-align: center;
+          font-size: 12px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: var(--lavender-ink);
+          background: var(--lavender);
+          padding: 6px;
+          margin: 0 -5vw 0;
+          font-weight: 700;
         }
 
         .lb-hero-card {
           background: var(--cream);
           margin-top: 26px;
-          padding: 30px;
-          box-shadow: 0 10px 30px rgba(90,70,120,0.15);
-          display: flex;
-          flex-wrap: wrap;
-          gap: 30px;
-          justify-content: space-between;
+          padding: clamp(28px, 5vw, 60px);
+          box-shadow: 0 20px 50px rgba(90,70,120,0.3);
+          position: relative;
+          display: grid;
+          grid-template-columns: 1.15fr 1fr;
+          gap: 40px;
           align-items: center;
           border: 2px solid var(--cream-deep);
-          border-radius: 12px;
         }
+        @media (max-width: 820px) { .lb-hero-card { grid-template-columns: 1fr; } }
 
+        .lb-hero-eyebrow {
+          font-size: 12.5px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: var(--tan-deep);
+          margin-bottom: 10px;
+          font-weight: 700;
+        }
         .lb-hero-title {
-          font-size: clamp(32px, 5vw, 48px);
+          font-family: 'Caveat', cursive;
+          font-size: clamp(38px, 6vw, 64px);
+          line-height: 1.08;
           color: var(--lavender-deep);
-          margin: 0 0 14px;
+          margin: 0 0 18px;
+          transform: rotate(-0.6deg);
         }
-        .lb-hero-body { font-size: 15px; line-height: 1.6; max-width: 450px; }
+        .lb-hero-title em { font-style: normal; color: var(--tan-deep); }
+        .lb-hero-body {
+          font-size: 16px;
+          line-height: 1.75;
+          color: var(--lavender-ink);
+          max-width: 460px;
+          margin-bottom: 22px;
+        }
 
+        .lb-seal {
+          width: 74px;
+          height: 74px;
+          border-radius: 50%;
+          background: var(--lavender);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+          transform: rotate(-6deg);
+        }
+        .lb-seal-inner {
+          width: 52px;
+          height: 52px;
+          border-radius: 50%;
+          background: var(--cream);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .lb-hero-photos { position: relative; display: flex; justify-content: center; align-items: flex-start; gap: 18px; padding-top: 10px; }
+        .lb-strip {
+          background: var(--lavender-deep);
+          padding: 10px 8px;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          transform: rotate(5deg);
+          box-shadow: 0 14px 26px rgba(0,0,0,0.25);
+        }
+        .lb-strip-frame { width: 76px; height: 60px; background: linear-gradient(135deg,#e0c8a3,#b08a58); }
+        .lb-strip-frame:nth-child(2) { background: linear-gradient(135deg,#cbb8e6,#9377b8); }
+        .lb-strip-frame:nth-child(3) { background: linear-gradient(135deg,#f7f0df,#ddc99f); }
+
+        .lb-caption {
+          font-family: 'Caveat', cursive;
+          font-size: 16px;
+          color: var(--lavender-deep);
+          position: absolute;
+          transform: rotate(-5deg);
+        }
+
+        /* TAG NAV */
         .lb-tagbar {
           background: var(--lavender);
+          border-top: 3px solid var(--lavender-deep);
+          border-bottom: 3px solid var(--lavender-deep);
           display: flex;
           flex-wrap: wrap;
           justify-content: center;
-          gap: 12px;
+          gap: 0;
           padding: 14px 5vw;
-          margin: 30px 0;
         }
-        .lb-tag { font-size: 13px; font-weight: 700; color: var(--cream); }
+        .lb-tag {
+          font-size: 14px;
+          font-weight: 700;
+          color: var(--cream);
+          padding: 4px 16px;
+          border-right: 1px solid rgba(251,246,236,0.4);
+          white-space: nowrap;
+        }
+        .lb-tag:nth-child(odd) { transform: rotate(-1.5deg); display: inline-block; }
+        .lb-tag:nth-child(even) { transform: rotate(1.2deg); display: inline-block; }
+        .lb-tag:last-child { border-right: none; }
 
-        .lb-coupons-section { padding: 40px 5vw; text-align: center; }
-        .lb-coupons-title { font-size: 32px; color: var(--lavender-deep); margin-bottom: 20px; }
-        .lb-coupons-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto; }
+        /* QUOTE */
+        .lb-quote-section {
+          background: linear-gradient(180deg, var(--cream) 0%, var(--cream-deep) 100%);
+          text-align: center;
+          padding: 54px 6vw 44px;
+        }
+        .lb-quote {
+          font-family: 'Caveat', cursive;
+          font-weight: 700;
+          font-size: clamp(24px, 4vw, 38px);
+          color: var(--lavender-ink);
+          max-width: 780px;
+          margin: 0 auto;
+          line-height: 1.5;
+        }
+        .lb-quote .hl1 { color: var(--lavender-deep); }
+        .lb-quote .hl2 { color: var(--tan-deep); }
 
-        .coupon-scene { perspective: 1000px; height: 200px; cursor: pointer; }
-        .coupon-card { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        /* FILES SECTION */
+        .lb-files-section { background: var(--lavender-deep); padding: 60px 6vw 80px; position: relative; }
+        .lb-files-card {
+          background: var(--cream);
+          max-width: 900px;
+          margin: 0 auto;
+          padding: clamp(20px, 4vw, 44px);
+          border-radius: 4px 26px 4px 26px;
+          box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+          display: grid;
+          grid-template-columns: 0.85fr 1.15fr;
+          gap: 30px;
+          position: relative;
+        }
+        @media (max-width: 760px) { .lb-files-card { grid-template-columns: 1fr; } }
+
+        .lb-files-title {
+          font-family: 'Playfair Display', serif;
+          font-weight: 700;
+          font-size: 22px;
+          color: var(--cream);
+          background: var(--tan);
+          display: inline-block;
+          padding: 4px 14px;
+          margin-bottom: 18px;
+          transform: rotate(-1deg);
+        }
+        .lb-files-name {
+          font-family: 'Caveat', cursive;
+          font-size: 42px;
+          color: var(--lavender-deep);
+          margin: 0 0 4px;
+          border-bottom: 2px dashed var(--tan);
+          padding-bottom: 6px;
+        }
+        .lb-files-label {
+          font-size: 11.5px;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: var(--tan-deep);
+          font-weight: 700;
+          margin-bottom: 18px;
+        }
+        .lb-files-body { font-size: 15px; line-height: 1.75; color: var(--lavender-ink); margin-bottom: 18px; }
+        .lb-files-quality { font-family: 'Caveat', cursive; font-size: 24px; color: var(--lavender-deep); margin-bottom: 16px; }
+        .lb-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+        .lb-stat { background: var(--lavender); border-radius: 6px; padding: 10px 16px; text-align: center; min-width: 84px; }
+        .lb-stat:nth-child(2) { transform: rotate(-1.4deg); }
+        .lb-stat:nth-child(3) { transform: rotate(1.2deg); }
+        .lb-stat b { display: block; font-family: 'Playfair Display', serif; font-size: 20px; color: var(--cream); }
+        .lb-stat span { font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cream-deep); }
+        .lb-files-btn {
+          background: var(--tan);
+          border: 2px solid var(--tan-deep);
+          color: var(--cream);
+          font-weight: 700;
+          font-size: 12px;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          padding: 9px 18px;
+          border-radius: 4px;
+          display: inline-block;
+          transform: rotate(-0.8deg);
+        }
+
+        /* COUPONS */
+        .lb-coupons-section { background: var(--cream); padding: 70px 6vw 90px; text-align: center; }
+        .lb-coupons-eyebrow { font-size: 12.5px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--tan-deep); font-weight: 700; margin-bottom: 10px; }
+        .lb-coupons-title {
+          font-family: 'Playfair Display', serif;
+          font-weight: 900;
+          font-size: clamp(28px, 4.6vw, 46px);
+          color: var(--lavender-deep);
+          text-shadow: 3px 3px 0 var(--lavender);
+          margin: 0 0 8px;
+        }
+        .lb-coupons-sub { font-family: 'Caveat', cursive; font-size: 20px; color: var(--tan-deep); margin-bottom: 44px; }
+        .lb-coupons-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 26px; max-width: 980px; margin: 0 auto; }
+
+        .coupon-scene { perspective: 1400px; height: 220px; cursor: pointer; }
+        .coupon-card { position: relative; width: 100%; height: 100%; transition: transform 0.7s cubic-bezier(0.4,0.2,0.2,1); transform-style: preserve-3d; }
         .coupon-card.is-flipped { transform: rotateY(180deg); }
-        .coupon-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: center; }
-        .coupon-front { background: var(--cream); border: 2px solid var(--lavender-deep); text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        .coupon-front-title { font-weight: 700; font-size: 18px; color: var(--lavender-deep); margin: 0 0 6px; }
-        .coupon-front-sub { font-size: 14px; color: var(--tan-deep); margin: 0 0 10px; }
-        .coupon-hint { font-size: 11px; text-transform: uppercase; color: #888; }
-        .coupon-back { background: var(--lavender-deep); color: var(--cream); transform: rotateY(180deg); text-align: left; border: 2px dashed var(--tan); }
-        .coupon-back-label { font-size: 10px; text-transform: uppercase; color: var(--tan); margin: 0 0 4px; }
-        .coupon-back-title { font-weight: 700; font-size: 16px; margin: 0 0 6px; }
-        .coupon-back-body { font-size: 12px; line-height: 1.4; margin: 0 0 10px; flex: 1; }
-        .coupon-back-footer { display: flex; justify-content: space-between; font-size: 9px; text-transform: uppercase; border-top: 1px dashed rgba(255,255,255,0.3); padding-top: 6px; color: var(--tan); }
+        .coupon-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 14px; padding: 24px 18px; display: flex; flex-direction: column; }
+        .coupon-front { background: var(--cream); border: 2px solid var(--lavender-deep); align-items: center; justify-content: center; text-align: center; box-shadow: 0 10px 24px rgba(90,70,120,0.2); }
+        .coupon-front-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 19px; color: var(--lavender-deep); margin: 0 0 4px; }
+        .coupon-front-sub { font-family: 'Caveat', cursive; font-size: 17px; color: var(--tan-deep); margin: 0 0 14px; }
+        .coupon-hint { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #9c8672; }
+        .coupon-back { background: var(--lavender-deep); color: var(--cream); transform: rotateY(180deg); justify-content: center; text-align: left; border: 2px dashed var(--tan); box-shadow: 0 10px 24px rgba(0,0,0,0.3); }
+        .coupon-back-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--tan); margin: 0 0 6px; }
+        .coupon-back-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 17px; margin: 0 0 8px; }
+        .coupon-back-body { font-size: 13px; line-height: 1.55; color: var(--cream-deep); margin: 0 0 12px; flex: 1; }
+        .coupon-back-footer { display: flex; justify-content: space-between; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; border-top: 1px dashed rgba(251,246,236,0.4); padding-top: 8px; color: var(--tan); }
+
+        /* FOOTER */
+        .lb-footer { background: var(--lavender-deep); padding: 70px 6vw 50px; text-align: center; position: relative; overflow: hidden; }
+        .lb-footer-title {
+          font-family: 'Playfair Display', serif;
+          font-weight: 900;
+          font-size: clamp(36px, 9vw, 92px);
+          color: var(--cream);
+          text-shadow: 4px 4px 0 var(--tan);
+          margin: 0;
+          letter-spacing: 0.02em;
+          line-height: 1;
+        }
+        .lb-footer-sub { font-family: 'Caveat', cursive; font-size: clamp(19px, 2.6vw, 27px); color: var(--cream); margin: 22px auto 30px; max-width: 560px; line-height: 1.5; }
+        .lb-footer-name { color: var(--tan); }
+        .lb-footer-sign { font-family: 'Caveat', cursive; font-size: 22px; color: var(--cream-deep); }
       `}</style>
 
       <div className="lb-topbar">
@@ -216,40 +465,102 @@ export default function App() {
       </div>
 
       <div className="lb-hero-wrap">
-        <p className="lb-ribbon">HAPPY BIRTHDAY, LAURA! 🎀</p>
+        <p className="lb-ribbon">HAPPY BIRTHDAY, LAURA!</p>
+        <p className="lb-ribbon-sub">one of the closest people to me</p>
 
         <div className="lb-hero-card">
           <div>
-            <p style={{ fontSize: "12px", textTransform: "uppercase", color: "var(--tan-deep)", fontWeight: 700 }}>
-              older sister &middot; best friend &middot; partner in crime
-            </p>
-            <h1 className="lb-hero-title">The girl who proved "soulmates" are real 💕</h1>
+            <p className="lb-hero-eyebrow">older sister &middot; best friend &middot; partner in crime</p>
+            <h1 className="lb-hero-title">
+              the girl who proved
+              <br />
+              <em>"soulmates"</em> are real
+            </h1>
             <p className="lb-hero-body">
               There are people who make the world quieter, and then there's you —
-              the one who makes it louder, warmer, and worth every second.
+              the one who makes it louder, warmer, and worth every second. Happy
+              birthday to my sister, Laura Tateshka, the main character of my
+              favorite memories.
             </p>
+            <OrnamentSeal />
           </div>
-          <div>
-            <CameraFrame rotate={-4} />
+
+          <div style={{ position: "relative" }}>
+            <div className="lb-hero-photos">
+              <CameraFrame rotate={-6} tone="lavender" />
+              <div style={{ position: "relative" }}>
+                <div className="lb-strip">
+                  <div className="lb-strip-frame" />
+                  <div className="lb-strip-frame" />
+                  <div className="lb-strip-frame" />
+                </div>
+                <span className="lb-caption" style={{ top: -24, right: -6 }}>
+                  our favorite memory
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="lb-tagbar">
         {TAGS.map((t) => (
-          <span className="lb-tag" key={t}>• {t}</span>
+          <span className="lb-tag" key={t}>{t}</span>
         ))}
       </div>
 
+      <div className="lb-quote-section">
+        <p className="lb-quote">
+          You're the <span className="hl1">main character</span> in my favorite stories
+          <br />and <span className="hl2">the soul</span> behind every memory
+        </p>
+      </div>
+
+      <div className="lb-files-section">
+        <div className="lb-files-card">
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, justifyContent: "center" }}>
+            <CameraFrame rotate={3} big tone="tan" />
+            <FlowerMark size={70} />
+          </div>
+          <div>
+            <span className="lb-files-title">Sister Files</span>
+            <h3 className="lb-files-name">Laura Tateshka</h3>
+            <p className="lb-files-label">my person</p>
+            <p className="lb-files-body">
+              Even when life gets busy and miles or routines keep us apart, you know my silence just as well as my laugh. Thank you for being the one who turns our rare moments together into unforgettable core memories, and for being endlessly, wonderfully you. Happy Birthday!
+            </p>
+            <p className="lb-files-quality">pretty vibes, kind heart</p>
+            <div className="lb-stats">
+              <div className="lb-stat"><b>&infin;</b><span>memories</span></div>
+              <div className="lb-stat"><b>100%</b><span>real one</span></div>
+              <div className="lb-stat"><b>10/10</b><span>vibe check</span></div>
+            </div>
+            <span className="lb-files-btn">stay smiling</span>
+          </div>
+        </div>
+      </div>
+
       <div className="lb-coupons-section">
-        <h2 className="lb-coupons-title">Love Coupons 💌</h2>
-        <p style={{ color: "var(--tan-deep)", marginBottom: "24px" }}>нажми на карточку, чтобы открыть!</p>
+        <p className="lb-coupons-eyebrow">made just for you</p>
+        <h2 className="lb-coupons-title">Love Coupons</h2>
+        <p className="lb-coupons-sub">click a card to open it</p>
         <div className="lb-coupons-grid">
           {COUPONS.map((c, i) => (
-            <FlipCoupon coupon={c} key={c.title} tilt={i % 2 === 0 ? -2 : 2} />
+            <FlipCoupon coupon={c} key={c.title} tilt={i % 2 === 0 ? -1 : 1} />
           ))}
         </div>
+      </div>
+
+      <div className="lb-footer">
+        <h2 className="lb-footer-title">FOREVER FAVORITE</h2>
+        <p className="lb-footer-sub">
+          Happy birthday, <span className="lb-footer-name">Laura</span>. May this
+          year bring you as much joy as you've given me all these years.
+        </p>
+        <p className="lb-footer-sign">with love, your little sister Malika</p>
       </div>
     </div>
   );
 }
+
+export default App;
