@@ -621,3 +621,4 @@ const toggleMusic = () => {
     </div>
   );
 }
+export default App;
